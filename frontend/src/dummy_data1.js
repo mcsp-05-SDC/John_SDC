@@ -21,7 +21,7 @@ const data = [
 
 
 //write a loop that will create 1000 record
-for(var i=1;i<1000;i++){
+for(var i=1;i<1000000;i++){
     //need to push into data as an [`${randomString}, ${randomString}, ${randomNum}, ${randomString}`]
     let entrie=[Math.random().toString(36).substring(2, 13),Math.random().toString(36).substring(2, 13), Math.floor(Math.random() * 6), Math.random().toString(36).substring(2, 13)];
     data.push(entrie);
