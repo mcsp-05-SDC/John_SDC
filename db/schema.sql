@@ -15,16 +15,28 @@ id serial,
 name varchar,
 account varchar,
 rating integer,
-comment varchar
+comment varchar,
+tsv tsvector
 
 );
 --format to add multiple inserts from a file csv
 
 COPY products(name,account,rating,comment)
-FROM 'C:/Users/Jferg/Documents/SDC/John_SDC/frontend/src/data.csv'
+FROM 'C:/Users/Jferg/Documents/SDC/John_SDC/db/data.csv'
 WITH
 DELIMITER ','
-CSV HEADER
+CSV HEADER;
+
+COPY products(name,account,rating,comment)
+FROM 'C:/Users/Jferg/Documents/SDC/John_SDC/db/data1.csv'
+WITH
+DELIMITER ','
+CSV HEADER;
+
+UPDATE products SET tsv=(to_tsvector(name));
+CREATE INDEX tsv_search ON products(tsv);
+
+CREATE TRIGGER tsv_trigger BEFORE INSERT OR UPDATE ON products FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger(tsv, 'pg_catalog.english', name);
 
 -- ADD RECORDS TO YOUR TABLE
 
