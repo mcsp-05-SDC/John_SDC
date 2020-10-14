@@ -12,6 +12,8 @@ app.use(express.static(path.join(__dirname, "./frontend/dist")));
 app.use(body.urlencoded({extended: false}));
 app.use(body.json());
 app.use(cors());
+
+
 //for proxy to render the dist files
 app.get('/itemreview', (req, res) => {
   res.sendFile(path.join(`${__dirname}/frontend/dist/bundle.js`))
@@ -25,7 +27,7 @@ app.post("/targets", (req, res)=>{
     let comment= req.body.comment;
 
 
-    db.query('INSERT into products(name,account, rating, comment VALUES($1,$2,$3,$4)',[name,account,rating,comment], (err, data)=>{
+    db.query('INSERT into products(name,account, rating, comment) VALUES($1,$2,$3,$4)',[name,account,rating,comment], (err, data)=>{
       if(err){
         console.log(err);
       }else{
@@ -38,14 +40,14 @@ app.post("/targets", (req, res)=>{
 //get specific product by name
 app.get("/targets/:name", (req, res) => {
   // run your query here
-  let id =req.params.name;
+  let id =`${req.params.name}`;
   console.log(id);
-  db.query('SELECT * FROM products WHERE name=$1', [id], (err, data) => {
+  db.query('SELECT * FROM products WHERE tsv@@ to_tsquery($1) limit 1', [id], (err, data) => {
       if(err){
         console.log(err);
       } else {
-        // console.log(data);
-        res.send(data);
+         console.log(data.rows[0]);
+        res.send(data.rows[0]);
       }
   })
 });
