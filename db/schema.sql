@@ -15,9 +15,7 @@ id serial,
 name varchar,
 account varchar,
 rating integer,
-comment varchar,
-tsv tsvector
-
+comment varchar
 );
 --format to add multiple inserts from a file csv
 
@@ -33,11 +31,13 @@ WITH
 DELIMITER ','
 CSV HEADER;
 
-UPDATE products SET tsv=(to_tsvector(name));
-CREATE INDEX tsv_search ON products(tsv);
+CREATE EXTENSION pg_trgm;
+CREATE INDEX name_idx ON products USING gin(name gin_trgm_ops);
 
-CREATE TRIGGER tsv_trigger BEFORE INSERT OR UPDATE ON products FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger(tsv, 'pg_catalog.english', name);
-
+-- EXPLAIN ANALYZE SELECT * FROM products WHERE name ilike 'Generic Metal Keyboard' limit 1;
 -- ADD RECORDS TO YOUR TABLE
-
-
+-- tsv tsvector
+-- UPDATE products SET tsv= to_tsvector(name);
+-- CREATE TRIGGER tsv_trigger BEFORE INSERT OR UPDATE ON products FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger(tsv, 'pg_catalog.english', name);
+-- CREATE INDEX tsv_search ON products(tsv);
+-- tsv@@ to_tsquery($1)

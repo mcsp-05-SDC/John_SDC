@@ -40,13 +40,14 @@ app.post("/targets", (req, res)=>{
 //get specific product by name
 app.get("/targets/:name", (req, res) => {
   // run your query here
-  let id =`${req.params.name}`;
-  console.log(id);
-  db.query('SELECT * FROM products WHERE tsv@@ to_tsquery($1) limit 1', [id], (err, data) => {
+  let id =`%${req.params.name}%`;
+  //console.log(id);
+  db.query('SELECT * FROM products WHERE name ilike $1 limit 1', [id], (err, data) => {
+  
       if(err){
         console.log(err);
       } else {
-         console.log(data.rows[0]);
+        // console.log(data.rows[0])
         res.send(data.rows[0]);
       }
   })
